@@ -1,0 +1,100 @@
+<mujoco model="final_walker">
+    <compiler inertiafromgeom="true" angle="radian"/>
+
+    <default>
+        <joint limited="true" damping="0" armature="0"/>
+        <geom condim="1" material="matgeom"/>
+        <motor ctrlrange="-1 1" ctrllimited="true"/>
+    </default>
+
+    <option timestep="0.010" iterations="50" tolerance="1e-10" solver="Newton" jacobian="dense" cone="pyramidal"/>
+
+    <size nconmax="50" njmax="200" nstack="10000"/>
+    <visual>
+        <map force="0.1" zfar="30"/>
+        <rgba haze="0.15 0.25 0.35 1"/>
+        <quality shadowsize="2048"/>
+        <global offwidth="800" offheight="800"/>
+    </visual>
+
+    <asset>
+        <mesh name="torso_mesh" file="torso.stl" /> 
+        <mesh name="thigh" file="upper_leg.stl" />
+        <mesh name="shin" file="lower_leg.stl" />
+        <mesh name="foot" file="foot.stl" />
+        <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="512"/> 
+        <texture name="texplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 0.15 0.2" width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>  
+        <texture name="texgeom" type="cube" builtin="flat" mark="cross" width="127" height="1278" rgb1="0.8 0.6 0.4" rgb2="0.8 0.6 0.4" markrgb="1 1 1" random="0.01"/>  
+        <material name="matplane" reflectance="0.3" texture="texplane" texrepeat="1 1" texuniform="true"/>
+        <material name="matgeom" texture="texgeom" texuniform="true" rgba="0.8 0.6 .4 1"/>
+    </asset>
+
+    <worldbody>
+    <geom name="floor" pos="0 0 0" size="0 0 .25" type="plane" material="matplane" condim="3"/>
+    <light directional="false" diffuse=".2 .2 .2" specular="0 0 0" pos="0 0 5" dir="0 0 -1" castshadow="false"/>
+    <light mode="targetbodycom" target="torso" directional="false" diffuse=".8 .8 .8" specular="0.3 0.3 0.3" pos="0 0 4.0" dir="0 0 -1"/>       
+
+    <body name="torso" pos="0 0 0.34" euler="0 0 0">
+        <freejoint name="root"/>
+        <geom euler="0 0 0" pos="0 0 0.1" type="mesh" rgba="0.79216 0.81961 0.93333 1" mass="0.416" mesh="torso_mesh" />
+    
+        <body name="right_thigh" pos="0 -0.12 0">
+            <inertial pos="0 0 0" euler="0 0 0" mass="0.0183" diaginertia="0.000015574 0.000015574 0.000000517" />
+            <!-- <joint name="right_hip_x" pos="0 0 0" axis="1 0 0" range="-0.damping="0"5 0.5"   damping="0" stiffness="0.10" armature="0.01" /> -->
+            <joint name="right_hip"  pos="0 0 0.1" axis="0 1 0" limited="true" range="-0.8 0.8"  damping="0" stiffness="0.10" armature="0.01"/>
+            <geom euler="0 0 1.571" type="mesh" rgba="0.79216 0.81961 0.93333 1" mass="0.0183" mesh="thigh" />
+
+            <body name="right_shin" pos="0 0 -0.2">
+                <inertial pos="0 0 0" euler="0 0 0" mass="0.0183" diaginertia="0.000015574 0.000015574 0.000000517" />
+                <joint name="right_knee" pos="0 0 0.1" axis="0 1 0" range="0 1" damping="0" stiffness="0.10" armature="0.01" />
+                <geom euler="0 0 1.571" type="mesh" rgba="0.79216 0.81961 0.93333 1" mass="0.0183" mesh="shin" />
+                <!-- <geom size="0.06 0.005 0.06" pos="0 0 -0.2" quat="0.707107 0.707107 0 0" type="box" rgba="0.79216 0.81961 0.93333 1" /> -->
+
+                <body name="right_foot" pos="0 0 -0.12" euler="0 0 0" >
+                    <!-- <joint name="right_ankle_y"   pos="0 0 0.08" axis="0 1 0"   range="-20 20" stiffness="0" /> -->
+                    <inertial pos="0 0 0" euler="0 0 0" mass="0.096" diaginertia="0.000029600 0.000052000 0.000080000" />
+                    <joint name="right_ankle" pos="0 0 0" axis="0 1 0" range="-0.5 0.5" stiffness="0"  armature="0.01" />
+                    <geom euler="0 0 0" type="mesh" rgba="0.79216 0.81961 0.93333 1" mass="0.096" mesh="foot" />
+                    
+                </body>
+            </body>
+        </body>
+
+
+        <body name="left_thigh" pos="0 0.12 0">
+            <inertial pos="0 0 0" euler="0 0 0" mass="0.0183" diaginertia="0.000015574 0.000015574 0.000000517" />
+            <!-- <joint name="right_hip_x" pos="0 0 0" axis="1 0 0" range="-0.damping="0"5 0.5"   damping="0" stiffness="0.10" armature="0.01" /> -->
+            <joint name="left_hip"  pos="0 0 0.1" axis="0 1 0" limited="true" range="-0.8 0.8"  damping="0" stiffness="0.10" armature="0.01"/>
+            <geom euler="0 0 1.571" type="mesh" rgba="0.79216 0.81961 0.93333 1" mass="0.0183" mesh="thigh" />
+
+            <body name="left_shin" pos="0 0 -0.2">
+                <inertial pos="0 0 0" euler="0 0 0" mass="0.0183" diaginertia="0.000015574 0.000015574 0.000000517" />
+                <joint name="left_knee" pos="0 0 0.1" axis="0 1 0" range="0 1" damping="0" stiffness="0.10" armature="0.01" />
+                <geom euler="0 0 1.571" type="mesh" rgba="0.79216 0.81961 0.93333 1" mass="0.0183" mesh="shin" />
+                <!-- <geom size="0.06 0.005 0.06" pos="0 0 -0.2" quat="0.707107 0.707107 0 0" type="box" rgba="0.79216 0.81961 0.93333 1" /> -->
+
+                <body name="left_foot" pos="0 0 -0.12" euler="0 0 0" >
+                    <!-- <joint name="right_ankle_y"   pos="0 0 0.08" axis="0 1 0"   range="-20 20" stiffness="0" /> -->
+                    <inertial pos="0 0 0" euler="0 0 0" mass="0.096" diaginertia="0.000029600 0.000052000 0.000080000" />
+                    <joint name="left_ankle" pos="0 0 0" axis="0 1 0" range="-0.5 0.5" stiffness="0"  armature="0.01" />
+                    <geom euler="0 0 0" type="mesh" rgba="0.79216 0.81961 0.93333 1" mass="0.096" mesh="foot" />
+                    
+                </body>
+            </body>
+        </body>
+
+
+    </body>
+    </worldbody>
+
+
+    <actuator>
+        <motor name="right_hip"     gear="2" joint="right_hip" />
+        <motor name="right_knee"      gear="2" joint="right_knee" />
+        <motor name="left_hip"      gear="2" joint="left_hip" />
+        <motor name="left_knee"       gear="2" joint="left_knee" />
+        <motor name="left_ankle"       gear="2" joint="left_ankle" />
+        <motor name="right_ankle"       gear="2" joint="right_ankle" />
+    </actuator>
+</mujoco>
+
